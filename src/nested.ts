@@ -1,6 +1,6 @@
 import { Answer } from "./interfaces/answer";
 import { Question, QuestionType } from "./interfaces/question";
-import { publishQuestion } from "./objects";
+import { duplicateQuestion, makeBlankQuestion } from "./objects";
 
 /**
  * Consumes an array of questions and returns a new array with only the questions
@@ -163,7 +163,13 @@ export function addNewQuestion(
     name: string,
     type: QuestionType,
 ): Question[] {
-    return [];
+    return [...questions, makeBlankQuestion(id, name, type)];
+}
+
+function getIndexfromId(questions: Question[], targetId: number): number {
+    return questions.findIndex(
+        (question: Question): boolean => question.id === targetId,
+    );
 }
 
 /***
@@ -176,7 +182,14 @@ export function renameQuestionById(
     targetId: number,
     newName: string,
 ): Question[] {
-    return [];
+    const targetIndex: number = getIndexfromId(questions, targetId);
+    const newQuestion: Question = {
+        ...questions[targetIndex],
+        name: newName,
+    };
+    const clone: Question[] = [...questions];
+    clone.splice(targetIndex, 1, newQuestion);
+    return clone;
 }
 
 /***
@@ -191,7 +204,30 @@ export function changeQuestionTypeById(
     targetId: number,
     newQuestionType: QuestionType,
 ): Question[] {
-    return [];
+    const targetIndex: number = getIndexfromId(questions, targetId);
+    const newQuestion: Question = {
+        ...questions[targetIndex],
+        type: newQuestionType,
+    };
+    if (newQuestionType !== "multiple_choice_question") {
+        newQuestion.options = [];
+    }
+    const clone: Question[] = [...questions];
+    clone.splice(targetIndex, 1, newQuestion);
+    return clone;
+}
+
+function addOption(
+    question: Question,
+    targetOptionIndex: number,
+    newOption: string,
+): Question {
+    if (targetOptionIndex === -1) {
+        return { ...question, options: [...question.options, newOption] };
+    }
+    const newOptions: string[] = [...question.options];
+    newOptions.splice(targetOptionIndex, 1, newOption);
+    return { ...question, options: newOptions };
 }
 
 /**
@@ -210,7 +246,15 @@ export function editOption(
     targetOptionIndex: number,
     newOption: string,
 ): Question[] {
-    return [];
+    const targetIndex: number = getIndexfromId(questions, targetId);
+    const newQuestion: Question = addOption(
+        questions[targetIndex],
+        targetOptionIndex,
+        newOption,
+    );
+    const clone: Question[] = [...questions];
+    clone.splice(targetIndex, 1, newQuestion);
+    return clone;
 }
 
 /***
@@ -224,5 +268,12 @@ export function duplicateQuestionInArray(
     targetId: number,
     newId: number,
 ): Question[] {
-    return [];
+    const targetIndex: number = getIndexfromId(questions, targetId);
+    const newQuestion: Question = duplicateQuestion(
+        newId,
+        questions[targetIndex],
+    );
+    const clone: Question[] = [...questions];
+    clone.splice(targetIndex + 1, 0, newQuestion);
+    return clone;
 }
