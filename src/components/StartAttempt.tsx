@@ -27,7 +27,9 @@ export function StartAttempt(): React.JSX.Element {
             <Button onClick={stop} disabled={!inProgress}>
                 Stop Quiz
             </Button>
-            <Button onClick={addAttempt}>Mulligan</Button>
+            <Button onClick={addAttempt} disabled={inProgress}>
+                Mulligan
+            </Button>
         </span>
     );
 }

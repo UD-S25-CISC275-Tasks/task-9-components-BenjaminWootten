@@ -11,14 +11,7 @@ export function RevealAnswer(): React.JSX.Element {
     return (
         <div>
             <Button onClick={changeVisibility}>Reveal Answer</Button>
-            Answer:{" "}
-            <span
-                style={{
-                    visibility: visible === true ? "visible" : "hidden"
-                }}
-            >
-                42
-            </span>
+            Answer: <span>{visible === true ? "42" : " "}</span>
         </div>
     );
 }
